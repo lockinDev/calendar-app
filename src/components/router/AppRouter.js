@@ -2,7 +2,7 @@ import React from 'react'
 import {
     BrowserRouter as Router, Switch, Redirect, Route
 }from 'react-router-dom'
-import { LoginScreen } from '../auth/LoginScreen'
+import { LoginScreen } from '../auth/login/LoginScreen'
 import { CalendarScreen } from '../calendar/CalendarScreen'
 
 export const AppRouter = () => {
