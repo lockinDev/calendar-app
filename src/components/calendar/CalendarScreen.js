@@ -10,8 +10,11 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { CalendarEvent } from "./CalendarEvent";
 import { CalendarModal } from "./CalendarModal";
 import { uiOpenModal } from "../../actions/ui";
+import { NewFab } from "../ui/NewFab";
+
 
 import './calendar.css'
+import { eventSetActive } from "../../actions/eventsCalendar";
 
 const localizer = momentLocalizer(moment);
 
@@ -54,7 +57,11 @@ export const CalendarScreen = () => {
     dispatch(uiOpenModal());
   };
 
-  const onSelectEvent = (e) => {console.log(e)};
+  const onSelectEvent = (e) => {
+
+    dispatch(eventSetActive(e));
+    dispatch(uiOpenModal());
+  };
 
   const onViewChangeEvent = (e) => {
       setLastView(e)
@@ -81,6 +88,9 @@ export const CalendarScreen = () => {
       />
 
       <CalendarModal />
+
+      <NewFab onDoubleClickEvent = {onDoubleClickEvent}/>
+
     </div>
   );
 };
