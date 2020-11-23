@@ -1,6 +1,6 @@
 import { types } from "../types/types";
 
-const initialState = {
+const initialState = { 
   modalOpen: false,
 };
 

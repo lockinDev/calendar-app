@@ -39,7 +39,7 @@ export const CalendarScreen = () => {
   const eventStyleGetter = (event, start, end, isSelected) => {
 
     const style = {
-      backgroundColor: "#367CF7",
+      backgroundColor: "#367CF7", 
       borderRadius: "0px",
       opacity: 0.8,
       display: "block",
@@ -58,7 +58,7 @@ export const CalendarScreen = () => {
   };
 
   const onSelectEvent = (e) => {
-
+    console.log(e);
     dispatch(eventSetActive(e));
     dispatch(uiOpenModal());
   };

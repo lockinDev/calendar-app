@@ -4,7 +4,7 @@ import { types } from "../types/types";
 const initialState = {
   events: [
     {
-      title: "Cumpleaños del jefe",
+      title: "Other event",
       start: moment().toDate(),
       end: moment().add(2, "hours").toDate(),
       bgcolor: "#fafafa", //this is a own property,
@@ -15,17 +15,23 @@ const initialState = {
       },
     },
   ],
+  activeEvent: null
 };
 
 
 export const calendarReducer = (state = initialState, action) => {
-    switch (action.key) {
+    switch (action.type) {
 
         case types.eventSetActive:
             return{
                 ...state, 
-                actionEvent: action.payload
+                activeEvent: action.payload
             }
+            case types.eventAddNew:
+              return{
+                  ...state, 
+                  events: [...state.events, action.payload]
+              }
     
         default:
             return state;
