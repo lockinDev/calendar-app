@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
@@ -18,23 +18,12 @@ import { eventSetActive } from "../../actions/eventsCalendar";
 
 const localizer = momentLocalizer(moment);
 
-const events = [
-  {
-    title: "First event",
-    start: moment().toDate(),
-    end: moment().add(2, "hours").toDate(),
-    bgcolor: "#fafafa", //this is a own property,
-    notes: "congratulation your first note",
-    user: {
-      _id: "1234",
-      name: "Lockin",
-    },
-  },
-];
 
 export const CalendarScreen = () => {
 
   const dispatch = useDispatch();
+
+  const {events} = useSelector(state => state.calendar)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
 
@@ -58,9 +47,7 @@ export const CalendarScreen = () => {
   };
 
   const onSelectEvent = (e) => {
-    console.log(e);
     dispatch(eventSetActive(e));
-    dispatch(uiOpenModal());
   };
 
   const onViewChangeEvent = (e) => {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Modal from "react-modal";
@@ -8,8 +8,7 @@ import Swal from "sweetalert2";
 
 import { customStyles } from "../../helpers/calendar-modal-custom-styles";
 import { uiCloseModal } from "../../actions/ui";
-import { eventAddNew } from "../../actions/eventsCalendar";
-
+import { eventAddNew, eventClearActive } from "../../actions/eventsCalendar";
 
 Modal.setAppElement("#root");
 
@@ -17,9 +16,17 @@ Modal.setAppElement("#root");
 const startDate = moment().minutes(0).seconds(0).add(1, "hours");
 const initialEndDate = startDate.clone().add(1, "hours");
 
-export const CalendarModal = () => {
+const initEvent ={
+  title: "",
+  notes: "",
+  start: startDate.toDate(),
+  end: initialEndDate.toDate(),
+}
 
-  const {modalOpen} = useSelector(state => state.ui)
+export const CalendarModal = () => {
+  const { modalOpen } = useSelector((state) => state.ui);
+  const { activeEvent } = useSelector((state) => state.calendar);
+
 
   const dispatch = useDispatch();
 
@@ -27,78 +34,80 @@ export const CalendarModal = () => {
   const [dateEnd, setDateEnd] = useState(initialEndDate.toDate());
   const [titleValid, setTitleValid] = useState(true);
 
-  const [formValues, setFormValues] = useState({
-    title: "Event",
-    notes: "",
-    start: startDate.toDate(),
-    end: initialEndDate.toDate(),
-  });
+  const [formValues, setFormValues] = useState(initEvent);
 
   const { title, notes, start, end } = formValues;
 
+  useEffect(() => {
+    if(activeEvent){
+      setFormValues(activeEvent);
+    }
+    
+  }, [activeEvent])
+
+
   const closeModal = () => {
     dispatch(uiCloseModal());
+    dispatch(eventClearActive());
+    setFormValues(initEvent);
   };
 
   const handleStartDateChange = (e) => {
     setDateStart(e);
     setFormValues({
-        ...formValues, 
-        start: e
+      ...formValues,
+      start: e,
     });
   };
 
   const handleEndDateChange = (e) => {
     setDateEnd(e);
     setFormValues({
-        ...formValues, 
-        end: e
+      ...formValues,
+      end: e,
     });
   };
 
-  const handleInputChange = ({target}) => {
-      setFormValues({
-          ...formValues,
-          [target.name]: target.value
-      });
-  }
+  const handleInputChange = ({ target }) => {
+    setFormValues({
+      ...formValues,
+      [target.name]: target.value,
+    });
+  };
 
-  const handleSubmitForm = (e) =>{
+  const handleSubmitForm = (e) => {
     e.preventDefault();
 
-    validationDateTime(start, end);
+    const momentStart = moment(start);
+    const momentEnd = moment(end);
+
+    if (momentStart.isSameOrAfter(momentEnd)) {
+      return Swal.fire(
+        "Error",
+        "The end time must be after that start date.",
+        "error"
+      );
+    }
     validationTitle(title);
 
-    dispatch(eventAddNew(
-      {
-        ...formValues, 
-        id: new Date().getTime()
-      }
-    ));
+    dispatch(
+      eventAddNew({
+        ...formValues,
+        id: new Date().getTime(),
+      })
+    );
 
     closeModal();
-    
-  }
+  };
 
-
-  const validationDateTime = (start, end) =>{
-      
-    const momentStart = moment( start );
-    const momentEnd = moment( end );
-
-    if(momentStart.isSameOrAfter(momentEnd)){
-        return Swal.fire('Error', 'The end time must be after that start date.');
+  const validationTitle = (title) => {
+    if (title.trim().length < 2) {
+      setTitleValid(false);
+      return;
+    } else {
+      setTitleValid(true);
     }
-  }
-
-  const validationTitle = (title) =>{
-      if(title.trim().length < 2){
-        setTitleValid(false);
-        return;
-      }else {
-        setTitleValid(true);
-      }
-  }
+  };
 
   return (
     <Modal
@@ -112,8 +121,7 @@ export const CalendarModal = () => {
     >
       <h1> New event </h1>
       <hr />
-      <form className="container" 
-      onSubmit = {handleSubmitForm}>
+      <form className="container" onSubmit={handleSubmitForm}>
         <div className="form-group">
           <label>Date and time of start event</label>
           <DateTimePicker
@@ -138,7 +146,7 @@ export const CalendarModal = () => {
           <label>Titles and notes</label>
           <input
             type="text"
-            className={`form-control ${!titleValid && 'is-invalid'}`}
+            className={`form-control ${!titleValid && "is-invalid"}`}
             placeholder="Event title"
             name="title"
             autoComplete="off"
