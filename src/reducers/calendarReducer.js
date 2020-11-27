@@ -32,13 +32,22 @@ export const calendarReducer = (state = initialState, action) => {
         events: [...state.events, action.payload],
       };
 
-      case types.eventUpdated:
-        return {
-          ...state,
-          events: state.events.map(
-            event => (event.id === action.payload.id) ? action.payload : event
-          )
-        };
+    case types.eventUpdated:
+      return {
+        ...state,
+        events: state.events.map(event =>
+          event.id === action.payload.id ? action.payload : event
+        ),
+      };
+
+    case types.eventDeleted:
+      return {
+        ...state,
+        events: state.events.filter(event =>
+          event.id !== state.activeEvent.id 
+        ),
+        activeEvent : null
+      };
 
     case types.eventClearActive:
       return {

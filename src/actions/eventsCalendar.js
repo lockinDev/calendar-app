@@ -15,5 +15,8 @@ export const eventSetActive = (event) => ({
     payload: event
 });
 
+export const eventDeletedActive = (event) => ({
+    type: types.eventDeleted});
+
 export const eventClearActive = (event) => ({
     type: types.eventClearActive});

@@ -14,7 +14,8 @@ import { NewFab } from "../ui/NewFab";
 
 
 import './calendar.css'
-import { eventSetActive } from "../../actions/eventsCalendar";
+import { eventClearActive, eventSetActive } from "../../actions/eventsCalendar";
+import { DeletedFab } from "../ui/DeletedFab";
 
 const localizer = momentLocalizer(moment);
 
@@ -23,7 +24,7 @@ export const CalendarScreen = () => {
 
   const dispatch = useDispatch();
 
-  const {events} = useSelector(state => state.calendar)
+  const {events, activeEvent} = useSelector(state => state.calendar)
 
   const eventStyleGetter = (event, start, end, isSelected) => {
 
@@ -55,6 +56,10 @@ export const CalendarScreen = () => {
       localStorage.setItem('lastView', e);
   };
 
+  const onSelectSlot = (e) => {
+    dispatch(eventClearActive());
+  }
+
   return (
     <div className="calendar-screen">
       <Navbar />
@@ -68,6 +73,8 @@ export const CalendarScreen = () => {
         onDoubleClickEvent={onDoubleClickEvent}
         onSelectEvent={onSelectEvent}
         onView={onViewChangeEvent}
+        onSelectSlot={onSelectSlot}
+        selectable = {true}
         view = {lastView}
         components={{
           event: CalendarEvent,
@@ -77,6 +84,11 @@ export const CalendarScreen = () => {
       <CalendarModal />
 
       <NewFab onDoubleClickEvent = {onDoubleClickEvent}/>
+
+      {
+        (activeEvent) && <DeletedFab />
+      }
+      
 
     </div>
   );
